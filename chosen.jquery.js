@@ -150,6 +150,7 @@
       this.include_group_label_in_selected = this.options.include_group_label_in_selected || false;
       this.max_shown_results = this.options.max_shown_results || Number.POSITIVE_INFINITY;
       this.case_sensitive_search = this.options.case_sensitive_search || false;
+      this.enableAddOnEnter = this.options.enableAddOnEnter || false;
       return this.hide_results_on_select = this.options.hide_results_on_select != null ? this.options.hide_results_on_select : true;
     };
 
@@ -472,10 +473,22 @@
           }
           this.mouse_on_container = false;
           break;
-        case 13:
-          if (this.results_showing) {
-            evt.preventDefault();
+        case 13:                    
+          evt.preventDefault();
+          if (this.enableAddOnEnter && !this.result_highlight && !this.is_multiple) {
+            $(this.form_field).append('<option>' + $(evt.target).val() + '</option>');
+            this.results_update_field();
+            this.result_highlight = this.search_results.find('li.active-result').last();
+            this.form_field_jq.trigger("chosen:addnew", {
+              'value': $(evt.target).val()
+            });
           }
+          if (this.results_showing) {
+            return this.result_select(evt);
+          }
+          //if (this.results_showing) {
+          //  evt.preventDefault();
+          //}
           break;
         case 27:
           if (this.results_showing) {
