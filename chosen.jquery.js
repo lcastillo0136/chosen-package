@@ -58,7 +58,8 @@
             group_label: group_position != null ? this.parsed[group_position].label : null,
             classes: option.className,
             style: option.style.cssText,
-            small: option.attributes['title'] && option.attributes['title'].value
+            small: option.attributes['title'] && option.attributes['title'].value, 
+            hidden_search: option.attributes['data-hiddentext'] && option.attributes['data-hiddentext'].value
           });
         } else {
           this.parsed.push({
@@ -275,7 +276,7 @@
       option_el.className = classes.join(" ");
       option_el.style.cssText = option.style;
       option_el.setAttribute("data-option-array-index", option.array_index);
-      option_el.innerHTML = option.search_text + ((option.small && "<small class='pull-right text-muted'>" + option.small + "</small>") || '');
+      option_el.innerHTML = option.search_text + ((option.hidden_search && "<div class='text-muted small m-l'>" + option.hidden_search + "</div>") || '') + ((option.small && "<small class='pull-right text-muted'>" + option.small + "</small>") || '');
       if (option.title) {
         option_el.title = option.title;
       }
@@ -374,11 +375,16 @@
           }
           option.search_text = option.group ? option.label : option.html;
           if (!(option.group && !this.group_search)) {
-            option.search_match = this.search_string_match(option.search_text, regex);
+            if (option.hidden_search) { 
+                option.search_match = this.search_string_match(option.hidden_search, regex); 
+                option.find_hidden = true; 
+            } 
+            option.search_match = this.search_string_match((option.hidden_search && option.hidden_search + ' ') + option.search_text, regex) || option.search_match; 
+
             if (option.search_match && !option.group) {
               results += 1;
             }
-            if (option.search_match) {
+            if (option.search_match && !option.find_hidden) {
               if (searchText.length) {
                 startpos = option.search_text.search(highlightRegex);
                 text = option.search_text.substr(0, startpos + searchText.length) + '</em>' + option.search_text.substr(startpos + searchText.length);
