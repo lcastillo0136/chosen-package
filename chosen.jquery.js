@@ -57,7 +57,8 @@
             group_array_index: group_position,
             group_label: group_position != null ? this.parsed[group_position].label : null,
             classes: option.className,
-            style: option.style.cssText
+            style: option.style.cssText,
+            small: option.attributes['title'] && option.attributes['title'].value
           });
         } else {
           this.parsed.push({
@@ -274,7 +275,7 @@
       option_el.className = classes.join(" ");
       option_el.style.cssText = option.style;
       option_el.setAttribute("data-option-array-index", option.array_index);
-      option_el.innerHTML = option.search_text;
+      option_el.innerHTML = option.search_text + ((option.small && "<small class='pull-right text-muted'>" + option.small + "</small>") || '');
       if (option.title) {
         option_el.title = option.title;
       }
